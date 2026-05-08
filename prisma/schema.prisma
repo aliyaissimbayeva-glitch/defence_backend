@@ -1,0 +1,229 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  RESTAURANT
+  CONSUMER
+  SHELTER
+  DRIVER
+  ADMIN
+}
+
+enum DecayState {
+  FRESH
+  DISCOUNTED
+  FREE
+  COMPOST
+}
+
+enum Allergen {
+  NUTS
+  DAIRY
+  GLUTEN
+  EGGS
+  SOY
+  FISH
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  DRIVER_ASSIGNED
+  IN_TRANSIT
+  DELIVERED
+  CANCELLED
+  REFUNDED
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  passwordHash String
+  role         Role
+  name         String
+  createdAt    DateTime @default(now())
+isVerified Boolean @default(false)
+
+verificationToken String?
+resetToken String?
+  allergens Allergen[]
+
+  restaurant Restaurant?
+  shelter    Shelter?
+  driver     Driver?
+
+  orders    Order[]
+  bids      AuctionBid[]
+  ratings   Rating[]
+  auditLogs AuditLog[]
+}
+
+model Restaurant {
+  id Int @id @default(autoincrement())
+
+  userId Int  @unique
+  user   User @relation(fields: [userId], references: [id])
+
+  name    String
+  address String
+
+  lat Float
+  lng Float
+
+  listings Listing[]
+}
+
+model Listing {
+  id Int @id @default(autoincrement())
+
+  restaurantId Int
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+
+  title       String
+  description String
+
+  ingredients String[]
+  allergens   Allergen[]
+
+  initialPrice Decimal @db.Decimal(10, 2)
+  currentPrice Decimal @db.Decimal(10, 2)
+
+  quantity     Int
+  availableQty Int
+
+  decayState DecayState @default(FRESH)
+
+  expiryAt DateTime
+
+  createdAt DateTime @default(now())
+
+  orderItems OrderItem[]
+  bids       AuctionBid[]
+  isActive   Boolean      @default(true)
+}
+
+model Order {
+  id Int @id @default(autoincrement())
+
+  consumerId Int
+  consumer   User @relation(fields: [consumerId], references: [id])
+
+  status OrderStatus @default(PENDING)
+
+  totalAmount Decimal @db.Decimal(10, 2)
+
+  createdAt DateTime @default(now())
+
+  items OrderItem[]
+
+  delivery Delivery?
+
+  ratings Rating[]
+}
+
+model OrderItem {
+  id      Int   @id @default(autoincrement())
+  orderId Int
+  order   Order @relation(fields: [orderId], references: [id])
+
+  listingId Int
+  listing   Listing @relation(fields: [listingId], references: [id])
+
+  quantity Int
+
+  unitPrice Decimal @db.Decimal(10, 2)
+}
+
+model Delivery {
+  id      Int   @id @default(autoincrement())
+  orderId Int   @unique
+  order   Order @relation(fields: [orderId], references: [id])
+
+  shelterId Int
+  shelter   Shelter @relation(fields: [shelterId], references: [id])
+
+  createdAt DateTime @default(now())
+}
+
+model Driver {
+  id Int @id @default(autoincrement())
+
+  userId Int  @unique
+  user   User @relation(fields: [userId], references: [id])
+
+  vehicleType  String
+  licensePlate String
+
+  routes DriverRoute[]
+}
+
+model Shelter {
+  id Int @id @default(autoincrement())
+
+  userId Int  @unique
+  user   User @relation(fields: [userId], references: [id])
+
+  name    String
+  address String
+
+  deliveries Delivery[]
+}
+
+model AuctionBid {
+  id Int @id @default(autoincrement())
+
+  listingId Int
+  listing   Listing @relation(fields: [listingId], references: [id])
+
+  bidderId Int
+  bidder   User @relation(fields: [bidderId], references: [id])
+
+  feeOffer Decimal @db.Decimal(10, 2)
+
+  createdAt DateTime @default(now())
+}
+
+model Rating {
+  id Int @id @default(autoincrement())
+
+  orderId Int
+  order   Order @relation(fields: [orderId], references: [id])
+
+  raterId Int
+  rater   User @relation(fields: [raterId], references: [id])
+
+  stars   Int
+  comment String?
+}
+
+model AuditLog {
+  id Int @id @default(autoincrement())
+
+  actorId Int?
+  actor   User? @relation(fields: [actorId], references: [id])
+
+  action String
+
+  entityType String
+  entityId   String
+
+  createdAt DateTime @default(now())
+}
+
+model DriverRoute {
+  id Int @id @default(autoincrement())
+
+  driverId Int
+  driver   Driver @relation(fields: [driverId], references: [id])
+
+  stops  Json
+  status String @default("PENDING")
+
+  createdAt DateTime @default(now())
+}
