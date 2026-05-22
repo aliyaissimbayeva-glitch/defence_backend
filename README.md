@@ -1,84 +1,115 @@
-# RescueBite API
+# RescueBite
 
-Production-grade backend API for reducing food waste through dynamic pricing, food rescue logistics, auctions, and real-time delivery workflows.
+RescueBite is a food rescue platform that helps restaurants reduce food waste by offering expiring food to consumers and shelters.
 
----
+## Features
 
-# Tech Stack
-
-- Node.js
-- Express.js
-- PostgreSQL
-- Prisma ORM
+### Authentication
 - JWT Authentication
-- BullMQ
-- Redis
-- Swagger UI
-- Jest
-- Resend Email API
+- Refresh tokens
+- Email verification
+- Password reset
+- Role based access
 
----
-
-# Features
-
-## Authentication
-
-- Register
-- Login
-- Logout
-- Refresh Tokens
-- Email Verification
-- Password Reset
-- RBAC Authorization
+Roles:
+- Restaurant
+- Consumer
+- Shelter
+- Driver
+- Admin
 
 ---
 
 ## Listings
 
+Restaurants can:
+
 - Create food listings
-- Dynamic decay pricing
-- Allergen filtering
-- Soft delete
-- Cursor pagination
+- Delete listings
+- Manage quantity
+- Automatic decay states:
+
+FRESH → DISCOUNTED → FREE → EXPIRED
 
 ---
 
-## Orders
+## Orders Flow
 
-- Create orders
-- Track statuses
-- Refund requests
+Consumer / Shelter
+
+Create order
+
+status = PENDING
+
+Restaurant
+
+Accept order
+
+status = CONFIRMED
+
+Driver
+
+Take delivery
+
+status = DRIVER_ASSIGNED
+
+Driver
+
+Pick up
+
+status = IN_TRANSIT
+
+Driver
+
+Deliver
+
+status = DELIVERED
 
 ---
 
-## Drivers
+## Delivery System
 
-- Driver registration
-- Delivery status updates
-- Route management
+Driver features:
 
----
-
-## Admin
-
-- Ban users
-- Override decay state
-- Audit logs
+- View confirmed orders
+- Take delivery
+- Track delivery status
+- Update progress
 
 ---
 
-## Background Workers
+## Auction System
 
-- Redis-backed BullMQ queues
-- Async email sending
-- Retry handling
-- Decay cron jobs
+Shelters can:
+
+- Place bids
+- Offer delivery fees
 
 ---
 
-# Installation
+## Tech Stack
 
-## Clone repository
+Backend:
+- Node.js
+- Express
+- Prisma
+- PostgreSQL
+- Redis
+- JWT
+
+Frontend:
+- React
+- Redux Toolkit
+- React Router
+- Axios
+- Vite
+
+Infrastructure:
+- Docker Compose
+
+---
+
+## Run with Docker
 
 ```bash
-git clone 
+docker compose up --build

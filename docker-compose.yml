@@ -1,99 +1,90 @@
 services:
+
   db:
     image: postgres:15
+    container_name: rescuebite-db
+
     restart: always
+
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: aliya
       POSTGRES_DB: rescuebite
+
     ports:
       - "5432:5432"
+
     volumes:
       - pgdata:/var/lib/postgresql/data
 
+
   redis:
     image: redis:7
+
+    container_name: rescuebite-redis
+
     restart: always
+
     ports:
       - "6379:6379"
 
- backend:
 
-    build: ./backend
+  backend:
+    build: .
 
     container_name: rescuebite-backend
 
     restart: always
 
     depends_on:
-
-      - postgres
-
+      - db
       - redis
 
     ports:
-
       - "3000:3000"
 
     environment:
-
-      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/rescuebite
-
+      DATABASE_URL: postgresql://postgres:aliya@db:5432/rescuebite
       REDIS_URL: redis://redis:6379
-
       JWT_SECRET: your_jwt_secret
-
       JWT_REFRESH_SECRET: your_refresh_secret
-
       EMAIL_API_KEY: your_email_key
-
       EMAIL_FROM: test@test.com
 
     command: sh -c "npx prisma migrate deploy && npm start"
 
 
-
   worker:
-
-    build: ./backend
+    build: .
 
     container_name: rescuebite-worker
 
     depends_on:
-
+      - db
       - redis
 
-      - postgres
-
     environment:
-
-      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/rescuebite
-
+      DATABASE_URL: postgresql://postgres:aliya@db:5432/rescuebite
       REDIS_URL: redis://redis:6379
 
     command: npm run worker
 
 
-
   frontend:
-
-    build: ./frontend
+    build: ./frontend/frontend
 
     container_name: rescuebite-frontend
 
     restart: always
 
     depends_on:
-
       - backend
 
     ports:
-
       - "5173:5173"
 
-
+    command: npm run dev -- --host
 
 
 volumes:
   pgdata:
-  version: "3.9"
