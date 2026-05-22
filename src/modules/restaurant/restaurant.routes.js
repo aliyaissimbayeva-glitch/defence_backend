@@ -26,7 +26,6 @@ router.post(
 
 router.get(
   '/',
-  requireAuth,
   getRestaurants
 );
 

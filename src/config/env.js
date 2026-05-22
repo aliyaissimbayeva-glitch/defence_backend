@@ -4,7 +4,8 @@ const requiredEnv = [
   'DATABASE_URL',
   'JWT_SECRET',
   'JWT_REFRESH_SECRET',
-  'RESEND_API_KEY'
+  'EMAIL_USER',
+'EMAIL_PASS'
 ];
 
 requiredEnv.forEach((key) => {

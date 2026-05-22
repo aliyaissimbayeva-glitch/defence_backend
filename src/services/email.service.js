@@ -1,8 +1,15 @@
-const { Resend } = require('resend');
+const nodemailer = require('nodemailer');
 
-const resend = new Resend(
-  process.env.RESEND_API_KEY
-);
+const transporter =
+  nodemailer.createTransport({
+
+    service: 'gmail',
+
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS
+    }
+  });
 
 async function sendVerificationEmail(
   email,
@@ -12,8 +19,9 @@ async function sendVerificationEmail(
   const verifyUrl =
     `http://localhost:3000/auth/verify-email?token=${token}`;
 
-  await resend.emails.send({
-    from: 'onboarding@resend.dev',
+  await transporter.sendMail({
+
+    from: process.env.EMAIL_USER,
 
     to: email,
 
@@ -30,6 +38,7 @@ async function sendVerificationEmail(
     `
   });
 }
+
 async function sendResetPasswordEmail(
   email,
   token
@@ -38,9 +47,9 @@ async function sendResetPasswordEmail(
   const resetUrl =
     `http://localhost:3000/reset-password?token=${token}`;
 
-  await resend.emails.send({
+  await transporter.sendMail({
 
-    from: 'onboarding@resend.dev',
+    from: process.env.EMAIL_USER,
 
     to: email,
 
@@ -59,14 +68,15 @@ async function sendResetPasswordEmail(
     `
   });
 }
+
 async function sendOrderConfirmationEmail(
   email,
   orderId
 ) {
 
-  await resend.emails.send({
+  await transporter.sendMail({
 
-    from: 'onboarding@resend.dev',
+    from: process.env.EMAIL_USER,
 
     to: email,
 
@@ -82,6 +92,9 @@ async function sendOrderConfirmationEmail(
     `
   });
 }
+
 module.exports = {
-  sendVerificationEmail,sendResetPasswordEmail, sendOrderConfirmationEmail
+  sendVerificationEmail,
+  sendResetPasswordEmail,
+  sendOrderConfirmationEmail
 };

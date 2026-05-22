@@ -3,7 +3,6 @@ require('dotenv').config();
 require('./config/env');
 
 const express = require('express');
-const cors = require('cors');
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require('./config/swagger');
 const authRoutes = require('./modules/auth/auth.routes');
@@ -21,17 +20,16 @@ const {
 } = require('./middleware/auth.middleware');
 const webhookRoutes = require('./modules/webhooks/webhook.routes');
 const app = express();
-app.use(cors({
-  origin: 'http://localhost:3000',
-  credentials: true
-}));
+const cors = require('cors');
+app.use(cors({ origin: 'http://localhost:5173' }));
+
 app.use(express.json());
 app.get('/', (req, res) => {
   res.send('API running');
 });
-app.use('/auth', authRoutes);app.use(
+app.use('/auth', authRoutes);
+app.use(
   '/listings',
-  requireAuth,
   listingRoutes
 );
 app.use('/orders', orderRoutes);

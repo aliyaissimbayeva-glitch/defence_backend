@@ -20,7 +20,7 @@ async function register(data) {
     password,
     role,
     name,
-    allergies
+    allergens
   } = data;
 
   const existing = await prisma.user.findUnique({
@@ -46,7 +46,7 @@ async function register(data) {
       role,
       name,
 
-      allergies,
+      allergens,
 
       verificationToken,
 
@@ -197,7 +197,7 @@ async function forgotPassword(email) {
     }
   });
 
-
+console.log('ADDING EMAIL JOB');
   await emailQueue.add(
 
   'reset-password',

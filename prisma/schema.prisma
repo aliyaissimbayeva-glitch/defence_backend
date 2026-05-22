@@ -23,6 +23,7 @@ enum DecayState {
 }
 
 enum Allergen {
+  NONE
   NUTS
   DAIRY
   GLUTEN
@@ -48,11 +49,12 @@ model User {
   role         Role
   name         String
   createdAt    DateTime @default(now())
-isVerified Boolean @default(false)
+  isVerified   Boolean  @default(false)
 
-verificationToken String?
-resetToken String?
-  allergens Allergen[]
+  verificationToken String?
+  resetToken        String?
+  refreshToken      String?
+  allergens         Allergen[]
 
   restaurant Restaurant?
   shelter    Shelter?
@@ -77,6 +79,7 @@ model Restaurant {
   lng Float
 
   listings Listing[]
+  orders   Order[]
 }
 
 model Listing {
@@ -109,22 +112,21 @@ model Listing {
 }
 
 model Order {
-  id Int @id @default(autoincrement())
+  id           Int         @id @default(autoincrement())
+  consumerId   Int?
+  shelterId    Int?
+  restaurantId Int?
+  status       OrderStatus @default(PENDING)
+  totalAmount  Decimal     @db.Decimal(10, 2)
+  createdAt    DateTime    @default(now())
 
-  consumerId Int
-  consumer   User @relation(fields: [consumerId], references: [id])
+  consumer   User?       @relation(fields: [consumerId], references: [id])
+  shelter    Shelter?    @relation(fields: [shelterId], references: [id])
+  restaurant Restaurant? @relation(fields: [restaurantId], references: [id])
 
-  status OrderStatus @default(PENDING)
-
-  totalAmount Decimal @db.Decimal(10, 2)
-
-  createdAt DateTime @default(now())
-
-  items OrderItem[]
-
+  items    OrderItem[]
   delivery Delivery?
-
-  ratings Rating[]
+  ratings  Rating[]
 }
 
 model OrderItem {
@@ -141,12 +143,14 @@ model OrderItem {
 }
 
 model Delivery {
-  id      Int   @id @default(autoincrement())
+  id Int @id @default(autoincrement())
+
   orderId Int   @unique
   order   Order @relation(fields: [orderId], references: [id])
 
-  shelterId Int
-  shelter   Shelter @relation(fields: [shelterId], references: [id])
+  driverId Int
+
+  driver Driver @relation(fields: [driverId], references: [id])
 
   createdAt DateTime @default(now())
 }
@@ -160,7 +164,8 @@ model Driver {
   vehicleType  String
   licensePlate String
 
-  routes DriverRoute[]
+  routes     DriverRoute[]
+  deliveries Delivery[]
 }
 
 model Shelter {
@@ -172,7 +177,7 @@ model Shelter {
   name    String
   address String
 
-  deliveries Delivery[]
+  orders Order[]
 }
 
 model AuctionBid {
@@ -187,6 +192,7 @@ model AuctionBid {
   feeOffer Decimal @db.Decimal(10, 2)
 
   createdAt DateTime @default(now())
+  status    String   @default("PENDING")
 }
 
 model Rating {

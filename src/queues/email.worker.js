@@ -1,3 +1,4 @@
+console.log('EMAIL WORKER STARTED');
 const { Worker } = require('bullmq');
 
 const {
@@ -14,7 +15,9 @@ const worker = new Worker(
   'emailQueue',
 
   async (job) => {
-
+console.log('WORKER GOT JOB');
+console.log(job.name);
+console.log(job.data);
     if (job.name === 'verify-email') {
 
       await sendVerificationEmail(

@@ -1,5 +1,16 @@
 require('./config/env');
-require('./queues/email.worker');
+try {
+
+  require('./queues/email.worker');
+
+  console.log('WORKER IMPORTED');
+
+} catch (err) {
+
+  console.log('WORKER IMPORT ERROR');
+
+  console.log(err);
+}
 const app = require('./app');
 
 const prisma =
@@ -7,7 +18,7 @@ const prisma =
 
 const {
   updateDecayStates
-} = require('./jobs/decay.worker');
+} = require('./modules/jobs/decay.worker');
 
 const PORT =
   process.env.PORT || 3000;

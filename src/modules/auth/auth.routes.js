@@ -44,7 +44,7 @@ router.post(
   logoutController
 );
 
-router.post(
+router.get(
   '/verify-email',
   verifyEmail
 );

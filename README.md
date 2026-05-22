@@ -1,88 +1,84 @@
-# RescueBite Backend
+# RescueBite API
 
-##  Description
-
-RescueBite is a backend API that helps reduce food waste by allowing restaurants to list surplus food and users to order it before expiration.
+Production-grade backend API for reducing food waste through dynamic pricing, food rescue logistics, auctions, and real-time delivery workflows.
 
 ---
 
-##  Setup
+# Tech Stack
+
+- Node.js
+- Express.js
+- PostgreSQL
+- Prisma ORM
+- JWT Authentication
+- BullMQ
+- Redis
+- Swagger UI
+- Jest
+- Resend Email API
+
+---
+
+# Features
+
+## Authentication
+
+- Register
+- Login
+- Logout
+- Refresh Tokens
+- Email Verification
+- Password Reset
+- RBAC Authorization
+
+---
+
+## Listings
+
+- Create food listings
+- Dynamic decay pricing
+- Allergen filtering
+- Soft delete
+- Cursor pagination
+
+---
+
+## Orders
+
+- Create orders
+- Track statuses
+- Refund requests
+
+---
+
+## Drivers
+
+- Driver registration
+- Delivery status updates
+- Route management
+
+---
+
+## Admin
+
+- Ban users
+- Override decay state
+- Audit logs
+
+---
+
+## Background Workers
+
+- Redis-backed BullMQ queues
+- Async email sending
+- Retry handling
+- Decay cron jobs
+
+---
+
+# Installation
+
+## Clone repository
 
 ```bash
-npm install
-```
-
-```bash
-npx prisma migrate dev
-```
-
-```bash
-node src/server.js
-```
-
----
-
-##  API Endpoints
-
-### Auth
-
-* POST /auth/register
-* POST /auth/login
-* POST /auth/refresh
-* POST /auth/logout
-
-### Listings
-
-* POST /listings
-* GET /listings (with cursor pagination)
-
-### Orders
-
-* POST /orders
-
-### Allergy
-
-* POST /allergy/check
-
----
-
-##  Features
-
-* JWT Authentication (access + refresh tokens)
-* Role-Based Access Control (RBAC)
-* Prisma ORM + PostgreSQL
-* ACID Transactions (no overselling)
-* Food State Machine (Fresh → Discounted → Free → Compost)
-* Allergy validation system
-* Rate limiting (auth endpoints)
-* Swagger API documentation
-* Cursor-based pagination
-* Environment validation
-
----
-
-## API Docs
-
-http://localhost:3000/docs
-
----
-
-##  Testing
-
-```bash
-npm test
-```
-
-Includes:
-
-* Unit tests
-* Integration tests
-* Auth protection tests
-
----
-
-##  Run
-
-```bash
-node src/server.js
-```
+git clone 
